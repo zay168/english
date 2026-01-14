@@ -28,6 +28,71 @@
             overflow: hidden;
         }
 
+        /* === RESPONSIVE LAYOUT (New) === */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+
+            #control-panel {
+                width: 100% !important;
+                height: 250px;
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                /* Allow wrapping */
+                overflow-y: scroll;
+                border-bottom: 1px solid #333;
+                border-right: none !important;
+                padding: 10px !important;
+                gap: 20px;
+                box-shadow: none !important;
+            }
+
+            .header {
+                width: 100%;
+                border-bottom: 1px solid #444;
+                margin-bottom: 10px !important;
+            }
+
+            .timer-box {
+                width: 150px;
+                margin-bottom: 0 !important;
+                padding: 10px !important;
+            }
+
+            #timer-display {
+                font-size: 2rem !important;
+            }
+
+            button.main-action-btn {
+                width: auto !important;
+                flex-grow: 1;
+                padding: 10px !important;
+            }
+
+            .status-module {
+                display: none;
+            }
+
+            /* Hide status on mobile/tablet to save space */
+            .override-grid {
+                display: none;
+            }
+
+            /* Hide overrides strictly on mobile */
+
+            #prompter-area {
+                height: calc(100vh - 250px);
+                width: 100%;
+            }
+
+            #red-line {
+                top: 50% !important;
+                left: 0 !important;
+                width: 100%;
+            }
+        }
+
         /* === LEFT CONTROL PANEL (ROBUST) === */
         #control-panel {
             width: 320px;
@@ -38,6 +103,7 @@
             border-right: 1px solid #333;
             z-index: 100;
             box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
         }
 
         .header {
@@ -197,12 +263,24 @@
             pointer-events: none;
         }
 
+        @media (max-width: 900px) {
+            #red-line {
+                left: 0 !important;
+            }
+        }
+
         #script-content {
             width: 70%;
             max-width: 900px;
             margin: 0 auto;
             padding-top: 45vh;
             padding-bottom: 80vh;
+        }
+
+        @media (max-width: 768px) {
+            #script-content {
+                width: 90%;
+            }
         }
 
         .segment {
@@ -250,6 +328,12 @@
             line-height: 1.5;
             color: white;
             font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .text {
+                font-size: 1.6rem;
+            }
         }
     </style>
 </head>
