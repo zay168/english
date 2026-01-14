@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US NEWS DIRECTOR DECK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --panel-bg: #161616;
+            --text-main: #e0e0e0;
+            --accent: #d93025;
+            /* Live Red */
+            --highlight: #1a73e8;
+            /* Tech Blue */
+            --success: #1e8e3e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* === LEFT CONTROL PANEL (ROBUST) === */
+        #control-panel {
+            width: 320px;
+            background-color: var(--panel-bg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #333;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+            color: white;
+            border-bottom: 1px solid #333;
+            padding-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .live-tag {
+            font-size: 0.7rem;
+            background: var(--accent);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* TIMER MODULE */
+        .timer-box {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        #timer-display {
+            font-size: 3.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: #666;
+            /* Gray when off */
+            font-family: monospace;
+            line-height: 1;
+        }
+
+        #timer-display.running {
+            color: var(--highlight);
+        }
+
+        button.main-action-btn {
+            background: var(--success);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        button.main-action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        /* VISUAL STATUS */
+        .status-module {
+            margin-top: 24px;
+            background: #222;
+            padding: 16px;
+            border-radius: 6px;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            display: block;
+        }
+
+        #next-visual {
+            color: var(--highlight);
+            opacity: 0.8;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* OVERRIDES */
+        .override-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: auto;
+            /* Push to bottom */
+        }
+
+        button.visual-btn {
+            background: #333;
+            color: #ccc;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        button.visual-btn:hover {
+            background: #444;
+            color: white;
+        }
+
+        button.visual-btn.active {
+            background: var(--highlight);
+            border-color: var(--highlight);
+            color: white;
+        }
+
+        button.proj-btn {
+            background: #222;
+            border: 1px dashed #555;
+            color: #aaa;
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+
+        button.proj-btn:hover {
+            border-color: #888;
+            color: white;
+        }
+
+        /* === TELEPROMPTER === */
+        #prompter-area {
+            flex-grow: 1;
+            position: relative;
+            background: #000;
+            overflow-y: scroll;
+        }
+
+        #red-line {
+            position: fixed;
+            top: 45%;
+            left: 320px;
+            /* Sidebar width */
+            right: 0;
+            height: 2px;
+            background: rgba(217, 48, 37, 0.6);
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        #script-content {
+            width: 70%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 45vh;
+            padding-bottom: 80vh;
+        }
+
+        .segment {
+            padding: 40px 0;
+            margin-bottom: 40px;
+            opacity: 0.25;
+            transition: opacity 0.3s;
+            border-left: 4px solid transparent;
+            padding-left: 24px;
+        }
+
+        .segment.active {
+            opacity: 1;
+            border-left: 4px solid var(--highlight);
+        }
+
+        .speaker {
+            display: inline-block;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #888;
+        }
+
+        /* Speaker Colors */
+        .segment[data-speaker="ZAYD"] .speaker {
+            color: #8ab4f8;
+        }
+
+        /* Light Blue */
+        .segment[data-speaker="ELICHA"] .speaker {
+            color: #f28b82;
+        }
+
+        /* Light Red */
+        .segment[data-speaker="DIRECTOR"] .speaker {
+            color: #81c995;
+        }
+
+        /* Green */
+
+        .text {
+            font-size: 2.2rem;
+            line-height: 1.5;
+            color: white;
+            font-weight: 400;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="control-panel">
+        <div class="header">
+            NEWS DECK
+            <span class="live-tag">LIVE</span>
+        </div>
+
+        <div class="timer-box">
+            <div id="timer-display">00:00</div>
+        </div>
+
+        <button class="main-action-btn" onclick="startShow()">▶ GO LIVE (START TIMER)</button>
+
+        <div class="status-module">
+            <div class="label">On Air Visual</div>
+            <span class="value" id="current-visual">STUDIO</span>
+            <div class="label" style="margin-top:10px;">Coming Up</div>
+            <span class="value" id="next-visual">ROBOT (Tech)</span>
+        </div>
+
+        <button class="proj-btn" onclick="openProjector()">⎋ Open Projector Window</button>
+
+        <div class="override-grid">
+            <button class="visual-btn" onclick="forceVisual('studio_main.png', this)">Studio</button>
+            <button class="visual-btn" onclick="forceVisual('tech_robot.jpg', this)">Robot</button>
+            <button class="visual-btn" onclick="forceVisual('space_rocket.webp', this)">Rocket</button>
+            <button class="visual-btn" onclick="forceVisual('weather_us.webp', this)">Weather</button>
+        </div>
+    </div>
+
+    <div id="red-line"></div>
+
+    <div id="prompter-area">
+        <div id="script-content">
+            <!-- Script injected here -->
+        </div>
+    </div>
+
+    <script>
+        // === 5 MINUTE PRO SCRIPT (FINAL MAP ACCURACY) ===
+        const script = [
+            // --- INTRO (1 min) ---
+            { bg: "studio_main.png", speaker: "DIRECTOR", text: "Sound check complete. Lighting is green. We are live in 5, 4, 3, 2..." },
+            { bg: "studio_main.png", speaker: "ZAYD", text: "Good morning, America. From our global headquarters in Washington D.C., I'm Zayd Al-Sarraf." },
+            { bg: "studio_main.png", speaker: "ELICHA", text: "And I'm Elicha. It is Tuesday, January 14th, 2026. This is the Global News Watch." },
+            { bg: "studio_main.png", speaker: "ZAYD", text: "We have a packed show for you today. The world is changing faster than ever, from the factory floor to the launchpad." },
+            { bg: "studio_main.png", speaker: "ELICHA", text: "That's right, Zayd. We are seeing breakthroughs this week that were considered science fiction just a decade ago." },
+            { bg: "studio_main.png", speaker: "ELICHA", text: "But with progress comes controversy. We will be debating the impact of the latest robotics unveiled at CES." },
+            { bg: "studio_main.png", speaker: "ZAYD", text: "And later, we'll look at the skies. We have a highly unusual NOAA temperature map to analyze, and news on humanity's return to the Moon." },
+
+            // --- SEGMENT 1: TECH & ROBOTICS (1 min 30s) ---
+            { bg: "tech_robot.jpg", speaker: "ZAYD", text: "Let's begin with our top story: Artificial Intelligence and Robotics." },
+            { bg: "tech_robot.jpg", speaker: "ZAYD", text: "The Consumer Electronics Show in Las Vegas has just closed, but one image is still dominating the discussion." },
+            { bg: "tech_robot.jpg", speaker: "ZAYD", text: "This is the 'Atlas 2.0' from Boston Dynamics. It is fully autonomous, powered by a neural network, and it doesn't need sleep." },
+
+            { bg: "tech_robot.jpg", speaker: "ELICHA", text: "It is visually stunning, Zayd, I agree. But I have to play devil's advocate here." },
+            { bg: "tech_robot.jpg", speaker: "ELICHA", text: "I've seen the reports from the Labor Union. They are terrified. They claim this specific model could replace 3 million factory workers by 2030." },
+            { bg: "tech_robot.jpg", speaker: "ELICHA", text: "Are we looking at an economic miracle, or a social crisis in the making?" },
+
+            { bg: "tech_robot.jpg", speaker: "ZAYD", text: "It is a valid concern, Elicha. However, the CEO of Boston Dynamics argues that Atlas is designed for 'Hazardous Environments'." },
+            { bg: "tech_robot.jpg", speaker: "ZAYD", text: "Think about toxic waste cleanup, deep-sea welding, or firefighting. These are jobs that humans shouldn't be doing." },
+
+            { bg: "tech_robot.jpg", speaker: "ELICHA", text: "That is the optimistic view. But regulations are not keeping up. Congress is still debating laws from 2024." },
+
+            { bg: "tech_robot.jpg", speaker: "ZAYD", text: "And that debate will continue. But for now, Wall Street loves it. Tech stocks are up 4% this morning on this news alone." },
+
+            // --- SEGMENT 2: SPACE (1 min 30s) ---
+            { bg: "space_rocket.webp", speaker: "ZAYD", text: "Now, let's leave the Earth behind for a moment. Turning to Texas." },
+            { bg: "space_rocket.webp", speaker: "ELICHA", text: "A historic moment. The Starship Super Heavy booster has successfully completed its static fire test." },
+
+            { bg: "space_rocket.webp", speaker: "ZAYD", text: "This machine is central to the Artemis III mission. The goal? To put American boots back on the Moon." },
+
+            { bg: "space_rocket.webp", speaker: "ELICHA", text: "It's not just about the Moon anymore, is it? It's about staying ahead. With China aiming for a lunar base by 2028, the pressure is on." },
+
+            { bg: "space_rocket.webp", speaker: "ZAYD", text: "Absolutely. President Trump has made Space Force and NASA a priority in this year's budget, calling it 'The New Frontier of American Greatness'." },
+
+            { bg: "space_rocket.webp", speaker: "ELICHA", text: "Critics argue about the cost. But the technology developed—solar panels, water purification—often saves lives here on Earth." },
+            { bg: "space_rocket.webp", speaker: "ZAYD", text: "A fair point. Lift-off is scheduled for next month. We will be covering it live." },
+
+            // --- SEGMENT 3: WEATHER (PIXEL-PERFECT MAP ANALYSIS) (1 min) ---
+            { bg: "weather_us.webp", speaker: "ELICHA", text: "Speaking of Earth... let's check the Situation Room. Zayd, walk us through this NOAA outlook." },
+            { bg: "weather_us.webp", speaker: "ZAYD", text: "(Pointing to map) I will, Elicha. This is the official temperature probability map for January 2026." },
+
+            { bg: "weather_us.webp", speaker: "ZAYD", text: "Look at the polarity here. Up in the Northwest—Montana and Washington—we see this blue sliver. That is 'Below Average' cold." },
+            { bg: "weather_us.webp", speaker: "ZAYD", text: "But the real story is the South. Look at this massive swathe of Orange stretching all the way to the Carolinas." },
+
+            { bg: "weather_us.webp", speaker: "ZAYD", text: "And right here, over Texas and Louisiana, we have a deep red core. That indicates 'Likely Above' average heat." },
+            { bg: "weather_us.webp", speaker: "ELICHA", text: "So while the Midwest is in white—'Equal Chances' of normal winter—the South is baking?" },
+
+            { bg: "weather_us.webp", speaker: "ZAYD", text: "Exactly. It's unseasonably warm. Farmers in Texas are concerned about early blooming followed by a late freeze. It's a high-risk January." },
+
+            // --- OUTRO (30s) ---
+            { bg: "studio_main.png", speaker: "ZAYD", text: "Before we go, President Trump is scheduled to speak tonight from the Oval Office." },
+            { bg: "studio_main.png", speaker: "ELICHA", text: "Sources confirm he will unveil the first location for the new 'Freedom Cities' initiative, along with strict new tariffs on Chinese robotics." },
+            { bg: "studio_main.png", speaker: "ZAYD", text: "We will have full analysis of the 'Agenda 47' expansion at 8 PM. Thank you for watching." },
+            { bg: "studio_main.png", speaker: "ELICHA", text: "Have a wonderful and productive Tuesday." },
+            { bg: "studio_main.png", speaker: "DIRECTOR", text: "And... Cut. Great show everyone." }
+        ];
+
+        // === ENGINE ===
+        const container = document.getElementById('script-content');
+        const channel = new BroadcastChannel('tv_studio_channel');
+        const currentLabel = document.getElementById('current-visual');
+        const nextLabel = document.getElementById('next-visual');
+        let currentBgImg = "";
+
+        // Render Script
+        script.forEach((line, idx) => {
+            const div = document.createElement('div');
+            div.className = 'segment';
+            div.dataset.bg = line.bg;
+            div.dataset.speaker = line.speaker;
+
+            // Look ahead for next visual
+            let nextBg = "";
+            for (let i = idx + 1; i < script.length; i++) {
+                if (script[i].bg !== line.bg) {
+                    nextBg = script[i].bg;
+                    break;
+                }
+            }
+            div.dataset.next = nextBg || "END";
+
+            div.innerHTML = `<span class="speaker">${line.speaker}</span><div class="text">${line.text}</div>`;
+            container.appendChild(div);
+        });
+
+        // === 1. ROBUST TIMER ===
+        let timerInterval = null;
+        let diffTime = 0;
+
+        function startShow() {
+            if (timerInterval) return; // Already running
+
+            const start = Date.now();
+            const display = document.getElementById('timer-display');
+            display.classList.add('running');
+
+            timerInterval = setInterval(() => {
+                diffTime = Date.now() - start;
+                const m = Math.floor(diffTime / 60000).toString().padStart(2, '0');
+                const s = Math.floor((diffTime % 60000) / 1000).toString().padStart(2, '0');
+                display.innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        // === 2. SCROLL TRACKER (PROMPTER) ===
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.segment').forEach(s => s.classList.remove('active'));
+                    entry.target.classList.add('active');
+
+                    const bg = entry.target.dataset.bg;
+                    const next = entry.target.dataset.next;
+
+                    // Update Visuals
+                    if (bg && bg !== currentBgImg) {
+                        fireVisual(bg);
+                        currentLabel.innerText = cleanName(bg);
+                        currentBgImg = bg;
+                    }
+
+                    // Update "Next" Indicator
+                    nextLabel.innerText = cleanName(next);
+                }
+            });
+        }, {
+            root: document.getElementById('prompter-area'),
+            rootMargin: "-45% 0px -45% 0px", // Strict Center (45-55%)
+            threshold: 0
+        });
+
+        document.querySelectorAll('.segment').forEach(s => observer.observe(s));
+
+        // === 3. VISUAL CONTROLS ===
+        function fireVisual(img) {
+            console.log("Visual Fired:", img);
+            channel.postMessage({ type: 'change_bg', image: img });
+
+            // Highlights manual buttons if they match
+            document.querySelectorAll('.visual-btn').forEach(btn => {
+                if (btn.onclick.toString().includes(img)) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        function forceVisual(img, btn) {
+            fireVisual(img);
+            currentLabel.innerText = "*MANUAL: " + cleanName(img);
+        }
+
+        function cleanName(filename) {
+            if (!filename) return "---";
+            return filename.replace('.png', '').replace('.jpg', '').replace('.webp', '')
+                .replace('studio_main', 'STUDIO')
+                .replace('tech_robot', 'ROBOT')
+                .replace('space_rocket', 'ROCKET')
+                .replace('weather_us', 'WEATHER')
+                .toUpperCase();
+        }
+
+        function openProjector() {
+            window.open('projector.html', 'ProjectorWindow', 'width=800,height=600');
+        }
+
+    </script>
+</body>
+
+</html>
